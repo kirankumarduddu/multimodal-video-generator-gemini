@@ -1,0 +1,25 @@
+# What the film is for. The story prompt includes this file word for word, so write facts only.
+# The guided setup (https://kirankumarduddu.github.io/multimodal-video-generator-gemini/guide.html) asks these questions.
+purpose: Launch trailer
+audience: Who will watch it, and where
+length_seconds: 60
+aspect_ratio: "16:9"          # or "9:16" for vertical
+language: English
+key_message: The one sentence they should remember.
+story_angle: The situation the film opens on, and the turn.
+beats:
+  - The problem, in the audience's world
+  - The product or idea
+  - Two or three things it does
+  - The payoff for people
+proof_points: []              # facts and numbers you can stand behind; the writer may use only these
+quotes: []                    # real, approved quotes only, with who said them
+call_to_action: What to do next
+characters: []                # fictional roles, for example "a shop owner in her 50s"
+settings: []                  # places for live-action shots
+mood: Warm, calm, human
+music_mood: Gentle, rising to a hopeful close
+screenshots: []               # paths in this folder for screen cards, for example brand/app-home.png
+must_include: []
+must_avoid:
+  - Any real person's likeness

@@ -1,0 +1,1 @@
+Read and follow [AGENTS.md](../AGENTS.md): ask the brief and brand questions, write story.json against the schema, make cards, cast and keyframes first, and never generate video before the person approves the shots.

@@ -1,0 +1,42 @@
+{
+  "title": "Kettle & Kite: your usual, ready when you are",
+  "logline": "For the regulars of a neighbourhood tea house: the new app gets your usual ready before you walk in, so the morning ritual stays a ritual.",
+  "aspect_ratio": "16:9",
+  "cast": [
+    {"id": "owner", "description": "The tea house owner, a woman in her 50s with short silver-streaked curls, round glasses, a mustard apron over a striped shirt, warm and quick to smile."},
+    {"id": "nurse", "description": "A regular, a young nurse in her late 20s with dark hair in a low bun, navy scrubs under an open raincoat, tired but kind eyes."}
+  ],
+  "music": [
+    {"id": "main", "starts_at": "s01-rain", "align": "tail", "prompt": "Warm acoustic brand-film score, about 65 seconds, 84 BPM, instrumental only. 0:00-0:12 soft fingerpicked acoustic guitar and light rain ambience, a little weary; 0:12 a gentle lift with soft piano; 0:14-0:45 light, playful momentum with brushed percussion and pizzicato strings; 0:45-1:05 a bright, hopeful swell resolving on a warm sustained chord. Cosy, human, never cheesy, no vocals."}
+  ],
+  "scenes": [
+    {"id": "s01-rain", "kind": "live_action", "seconds": 4.6, "trim_start": 0.6,
+     "shot": {"cast": ["nurse"], "setting": "A rainy street at early morning outside a small tea house with big glowing windows", "action": "She walks quickly along the wet pavement after a night shift, hood up, glances at the warm window of the tea house and checks the time on her watch.", "camera": "Slow tracking shot from across the street", "duration": 6},
+     "voice": [{"text": "Some mornings, there's no time to wait.", "at": 0.8}]},
+    {"id": "s02-rush", "kind": "live_action", "seconds": 4.4, "trim_start": 0.5,
+     "shot": {"cast": ["owner"], "setting": "Inside the tea house during the morning rush, wooden shelves of tea tins, steam rising", "action": "She pours hot water into a row of teapots, glances up at a queue out of focus and gives a small, apologetic smile.", "camera": "Gentle handheld push-in", "duration": 6},
+     "voice": [{"text": "And some rituals are worth keeping.", "at": 0.6}]},
+    {"id": "s03-title", "kind": "card", "seconds": 5.6,
+     "card": {"template": "title", "eyebrow": "Introducing", "headline": "The Kettle & Kite app", "sub": "Your usual, ready when you are."},
+     "voice": [{"text": "Introducing the Kettle and Kite app.", "at": 0.8}]},
+    {"id": "s04-how", "kind": "card", "seconds": 8.4,
+     "card": {"template": "flow", "headline": "Two taps to your usual", "items": ["Pick your usual", "Pay ahead", "Collect from the shelf"]},
+     "voice": [{"text": "Pick your usual, pay ahead, and collect it from the shelf.", "at": 0.6}]},
+    {"id": "s05-ready", "kind": "card", "seconds": 6.2,
+     "card": {"template": "stat", "headline": "Ready when you walk in", "stats": [{"value": "~5 min", "label": "from order to shelf"}, {"value": "7 days", "label": "open from 7 AM"}]},
+     "voice": [{"text": "It's ready in about five minutes, seven days a week.", "at": 0.5}]},
+    {"id": "s06-shelf", "kind": "live_action", "seconds": 4.8, "trim_start": 0.5,
+     "shot": {"cast": ["nurse"], "setting": "The pick-up shelf inside the tea house, a paper cup and a small teapot waiting", "action": "She steps in from the rain, lowers her hood, picks up her waiting cup from the wooden shelf and breathes in the steam with a relieved smile.", "camera": "Medium shot, slow push-in", "duration": 6}},
+    {"id": "s07-perks", "kind": "card", "seconds": 7.0,
+     "card": {"template": "list", "headline": "A little more every visit", "items": ["Seasonal blends first", "A stamp on every cup", "Your favourites, remembered"]},
+     "voice": [{"text": "Seasonal blends first, a stamp on every cup, and your favourites, remembered.", "at": 0.5}]},
+    {"id": "s08-wave", "kind": "live_action", "seconds": 4.6, "trim_start": 0.8,
+     "shot": {"cast": ["owner", "nurse"], "setting": "The tea house counter in soft morning light", "action": "The owner waves warmly across the counter; the nurse raises her cup in thanks and they share a laugh.", "camera": "Over-the-shoulder, gentle drift", "duration": 6},
+     "voice": [{"text": "Less waiting. More of this.", "at": 0.8}]},
+    {"id": "s09-statement", "kind": "card", "seconds": 5.4,
+     "card": {"template": "statement", "lines": ["Same tea.", "Same faces.", "Less queue."]}},
+    {"id": "s10-end", "kind": "card", "seconds": 7.0,
+     "card": {"template": "endcard", "headline": "Your usual, ready when you are.", "sub": "Kettle & Kite", "cta": "Download the app. Your first pot is on us."},
+     "voice": [{"text": "Kettle and Kite. Download the app, and your first pot is on us.", "at": 0.7}]}
+  ]
+}

@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+build/
+dist/
+
+# Secrets and local config: never commit keys, tokens or credentials
+.env
+.env.*
+*.key
+*credentials*.json
+*service-account*.json
+application_default_credentials.json
+
+# Generated media and film projects (examples/ keeps only its text files)
+renders/
+audio/
+*.stamp
+*.mp4
+*.mov
+*.wav
+*.mp3
+approvals.json
+/films/
+/my-film/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

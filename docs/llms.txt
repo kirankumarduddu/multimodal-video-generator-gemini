@@ -1,0 +1,33 @@
+# Multimodal Video Generator using Gemini
+
+> `mvg` (Python package `mvgen`) is a self-serve CLI that turns a brief and a brand into a finished trailer on the user's own Google Cloud project. Any LLM writes the story (story.json); Gemini models make the cast stills, keyframes, video clips, voiceover and music; ffmpeg assembles a 1080p master plus 720p web and phone copies. Apache-2.0, by Kiran Kumar Duddu. Not an official Google product.
+
+Core design: **cards first, then video.** Cheap, deterministic, brand-exact assets (HTML brand cards rendered by Playwright at 24 fps, cast reference stills, keyframes) are generated and reviewed first. `mvg review` writes build/review.html; `mvg approve` is required before any paid video generation. `mvg cards --posters` renders one still per card (its last frame) in seconds as a quick brand check. `mvg clips --animatic` makes a free Ken Burns animatic from keyframes; with `mvg voice --placeholder` and `mvg music --placeholder`, `mvg assemble` writes build/<title>-draft.mp4 so the cut can be timed before spending on video. Words, numbers and logos live only on cards; AI footage never contains text, logos, UIs or real people. Every step is idempotent and skips existing outputs unless `--force` is given (optionally with scene ids).
+
+Models (defaults, set in studio.yaml): story = any LLM (provider gemini | openai (any OpenAI-compatible endpoint) | anthropic | manual copy-paste; default gemini-3.5-flash on global); images = gemini-3-pro-image (Nano Banana Pro, global); video = veo-3.1-generate-001 (us-central1) or gemini-omni-1.1-flash-preview (global, Interactions API); voice = gemini-3.1-flash-tts-preview (global); music = lyria-3-pro-preview (global).
+
+Setup: Python 3.10+, git, gcloud, ffmpeg. Fonts in brand.yaml: a Google Fonts family name, `{family: ..., file: brand/fonts/X.ttf}`, or `{family: Arial, system: true}` (installed font, nothing loaded). Veo 3.1 makes 1080p/4k only as 8 s clips, so the CLI forces shot duration 8 at 1080p. `mvg doctor` checks that model ids exist (publisher model lookup, not project-scoped); access is proven by the Gemini call and the `--deep` TTS call. `pip install -e .`, `playwright install chromium`. Auth is Application Default Credentials (`gcloud auth application-default login` and `gcloud auth application-default set-quota-project PROJECT`). Enable aiplatform.googleapis.com. Roles for the user: roles/aiplatform.user and roles/serviceusage.serviceUsageConsumer (plus roles/storage.objectAdmin on the bucket only if output.gcs_uri is set). Scripts: `scripts/setup-gcp.ps1 -Project P -Email E [-Bucket B] [-SkipGrant]` and `scripts/setup-gcp.sh PROJECT EMAIL [BUCKET]` (env SKIP_GRANT=1). Non-Google API keys are read from environment variables named in studio.yaml (api_key_env), never from files. All generation is billed to the user's project.
+
+Command order: `mvg init DIR [--example kettle-and-kite]`, `mvg doctor [--deep]`, `mvg story prompt|write|check`, `mvg plan`, `mvg cards --posters`, `mvg cards`, `mvg cast`, `mvg keyframes`, `mvg review`, `mvg approve --all | IDS | --revoke IDS`, `mvg clips --animatic`, `mvg voice --placeholder`, `mvg music --placeholder`, `mvg assemble` (draft), `mvg clips`, `mvg voice`, `mvg music`, `mvg assemble` (final: build/<title>.mp4 plus -web and -phone). `mvg run` runs all steps and stops at the approval gate. Every command accepts `-C DIR`.
+
+Agents: stop after `mvg review` and let a person approve before paid video is generated. Use only facts from brief.yaml; cast must be fictional people.
+
+## Docs
+
+- [AGENTS.md](https://raw.githubusercontent.com/kirankumarduddu/multimodal-video-generator-gemini/main/AGENTS.md): instructions for coding agents working with or on the project
+- [CLAUDE.md](https://raw.githubusercontent.com/kirankumarduddu/multimodal-video-generator-gemini/main/CLAUDE.md): the same instructions for Claude Code
+- [README](https://raw.githubusercontent.com/kirankumarduddu/multimodal-video-generator-gemini/main/README.md): overview, install and usage
+- [Guided setup](https://kirankumarduddu.github.io/multimodal-video-generator-gemini/guide.html): step-by-step wizard that writes studio.yaml, brand.yaml, brief.yaml and checks story.json
+- [How it works](https://kirankumarduddu.github.io/multimodal-video-generator-gemini/): architecture and the cards-first design
+
+## Contracts
+
+- [story.schema.json](https://kirankumarduddu.github.io/multimodal-video-generator-gemini/assets/story.schema.json): JSON Schema (2020-12) for story.json: title, logline, aspect_ratio, cast, music, scenes (card or live_action), voice lines
+- [story_prompt.md](https://kirankumarduddu.github.io/multimodal-video-generator-gemini/assets/story_prompt.md): the story-writing prompt; {{BRIEF}}, {{BRAND}} and {{SCHEMA}} are replaced with brief.yaml, brand.yaml and the schema text
+
+## Optional
+
+- [Example project (kettle-and-kite)](https://github.com/kirankumarduddu/multimodal-video-generator-gemini/tree/main/examples/kettle-and-kite): brief.yaml, brand.yaml, studio.yaml and story.json
+- [Example story.json](https://kirankumarduddu.github.io/multimodal-video-generator-gemini/assets/example-story.json)
+- [Repository](https://github.com/kirankumarduddu/multimodal-video-generator-gemini)
+- [Vertex AI pricing](https://cloud.google.com/vertex-ai/generative-ai/pricing)

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multimodal-video-generator"
+version = "0.1.0"
+description = "Brief and brand in, finished trailer out: story from any LLM, cards first, then Gemini video, voice and music on your own Google Cloud project."
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "Kiran Kumar Duddu" }]
+requires-python = ">=3.10"
+dependencies = [
+  "google-genai>=2.20",
+  "google-auth>=2.30",
+  "requests>=2.31",
+  "pyyaml>=6.0",
+  "jsonschema>=4.21",
+  "imageio-ffmpeg>=0.6",
+  "playwright>=1.45",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+mvg = "mvgen.cli:main"
+
+[project.urls]
+Homepage = "https://kirankumarduddu.github.io/multimodal-video-generator-gemini/"
+Repository = "https://github.com/kirankumarduddu/multimodal-video-generator-gemini"
+
+[tool.setuptools.packages.find]
+include = ["mvgen*"]
+
+[tool.setuptools.package-data]
+mvgen = ["schema/*.json", "prompts/*.md", "starter/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

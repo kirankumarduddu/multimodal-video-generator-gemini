@@ -1,0 +1,23 @@
+# The brand. Cards use the colors, fonts and logo; every generated shot gets the look; the narrator uses the voice.
+name: Kettle & Kite
+tagline: Your usual, ready when you are.
+colors:
+  background: "#14302B"   # stage behind cards
+  surface: "#1E4A42"      # card panels
+  primary: "#E9B44C"      # rules, highlights, buttons
+  accent: "#F6E7C8"       # headlines
+  text: "#FFF9EE"
+  muted: "#BFD6CF"
+fonts:
+  heading: Fraunces       # a Google Fonts family name, or {family: ..., file: brand/fonts/MyFont.ttf}
+  body: Inter
+logo: null                # optional: brand/logo.png (transparent PNG or SVG)
+look: >-
+  Photoreal, cinematic, natural window light, warm amber and deep green color grade, soft film grain,
+  shallow depth of field, calm handheld camera
+voice:
+  name: Sulafat           # a Gemini TTS prebuilt voice
+  direction: Read this as the warm, unhurried narrator of a small, premium brand film. Natural pauses, smiling voice, no hype.
+rules:
+  - No logos, brand names or readable text in AI-generated footage; words live on cards
+  - Only invented, fictional people

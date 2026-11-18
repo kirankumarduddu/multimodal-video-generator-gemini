@@ -1,0 +1,23 @@
+# The brand. Cards use the colors, fonts and logo; every generated shot gets the look; the narrator uses the voice.
+# The guided setup (https://kirankumarduddu.github.io/multimodal-video-generator-gemini/guide.html) writes this file.
+name: Your Brand
+tagline: Your tagline.
+colors:
+  background: "#101418"   # stage behind cards
+  surface: "#1C2630"      # card panels
+  primary: "#E8B04B"      # rules, highlights, buttons
+  accent: "#F6EBD3"       # headlines
+  text: "#FFFFFF"
+  muted: "#B8C4CC"
+fonts:
+  heading: Playfair Display   # a Google Fonts family name, or {family: ..., file: brand/fonts/MyFont.ttf}
+  body: Inter
+logo: null                    # optional: brand/logo.png (transparent PNG or SVG)
+look: >-
+  Photoreal, cinematic, natural light, soft film grain, shallow depth of field, calm camera
+voice:
+  name: Sulafat               # a Gemini TTS prebuilt voice
+  direction: Read this as the warm, confident narrator of a premium brand film. Natural pauses, no hype.
+rules:
+  - No logos, brand names or readable text in AI-generated footage; words live on cards
+  - Only invented, fictional people

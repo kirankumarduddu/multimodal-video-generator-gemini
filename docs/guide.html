@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://oauth2.googleapis.com https://serviceusage.googleapis.com https://cloudresourcemanager.googleapis.com https://aiplatform.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Guided setup · Multimodal Video Generator using Gemini</title>
+<meta name="description" content="Step-by-step setup for mvg: install, connect your Google Cloud project, test it, choose models, describe your brand and brief, write and check the story, and make the film.">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<script src="assets/story-check.js" defer></script>
+<script src="assets/guide-data.js" defer></script>
+<script src="assets/yaml.js" defer></script>
+<script src="assets/gcp.js" defer></script>
+<script src="assets/steps.js" defer></script>
+<script src="assets/app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="logo" href="index.html"><span class="logo-mark" aria-hidden="true">mvg</span><span class="logo-name">Multimodal Video Generator</span> <span class="logo-sub">using Gemini</span></a>
+    <nav aria-label="Site">
+      <a href="index.html#how">How it works</a>
+      <a href="guide.html" aria-current="page">Guide</a>
+      <a href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap guide">
+  <aside class="sidebar" id="sidebar" aria-label="Steps">
+    <button type="button" class="btn sidebar-toggle" id="sidebar-toggle" aria-expanded="false" aria-controls="step-list">
+      <span id="sidebar-toggle-label">Steps</span><span aria-hidden="true">▾</span>
+    </button>
+    <div class="progress">
+      <div class="progress-label"><span>Progress</span><span id="progress-text">0 of 10</span></div>
+      <div class="progress-bar" role="progressbar" aria-label="Steps done" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" id="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <ol class="steps" id="step-list"></ol>
+    <div class="sidebar-foot">
+      Answers are saved in this browser only (localStorage). Tokens and keys are never saved.
+      <br><button type="button" class="linkbtn" id="reset-all">Start over</button>
+    </div>
+  </aside>
+
+  <main class="panel" id="main" tabindex="-1">
+
+  <!-- 1 -->
+  <section class="step" data-step="before" data-title="Before you start" hidden>
+    <div class="step-kicker">Step 1</div>
+    <h2>Before you start</h2>
+    <p><code>mvg</code> is a command-line tool that runs on your computer and calls Google models in <strong>your own</strong> Google Cloud project. This guide asks the questions, writes the config files and checks your setup. Nothing is sent anywhere except the Google API calls you start in steps 4 and 8, and the Google Fonts request for the brand preview in step 6.</p>
+    <h3>What you need</h3>
+    <ul>
+      <li>A <a href="https://console.cloud.google.com/projectcreate">Google Cloud project</a> with <a href="https://console.cloud.google.com/billing">billing enabled</a>, where you have (or can get) the Vertex AI User role.</li>
+      <li><a href="https://www.python.org/downloads/">Python 3.10 or newer</a>.</li>
+      <li><a href="https://git-scm.com/downloads">git</a>.</li>
+      <li>The <a href="https://cloud.google.com/sdk/docs/install">Google Cloud CLI (<code>gcloud</code>)</a>.</li>
+      <li>ffmpeg is bundled with the Python package (<code>imageio-ffmpeg</code>); nothing to install.</li>
+    </ul>
+    <h3>Use it responsibly</h3>
+    <ul>
+      <li><strong>Fictional people only.</strong> Cast descriptions must describe invented people. Never ask for a real or famous person's likeness, voice or name.</li>
+      <li><strong>Your rights.</strong> Only add logos, screenshots, fonts and quotes you have the right to use. Quotes must be real and approved.</li>
+      <li><strong>Facts.</strong> The story writer may only use the facts you list in the brief. Check every number on the cards before you publish.</li>
+      <li>Follow Google's <a href="https://policies.google.com/terms/generative-ai/use-policy">Generative AI Prohibited Use Policy</a>.</li>
+    </ul>
+    <h3>Costs</h3>
+    <p>Every model call is billed by Google to your project at <a href="https://cloud.google.com/vertex-ai/generative-ai/pricing">Vertex AI pricing</a>. Brand cards are rendered on your computer and cost nothing. Images, voice and music are billed per request. Video usually costs the most, so it comes last, behind the approval gate, and only for the shots you approve. Consider a <a href="https://cloud.google.com/billing/docs/how-to/budgets">budget alert</a> on the project.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="step" data-step="install" data-title="Clone &amp; install" hidden>
+    <div class="step-kicker">Step 2</div>
+    <h2>Clone and install</h2>
+    <p>Pick your system. The commands below update to match.</p>
+    <div class="seg os-toggle" role="group" aria-label="Operating system">
+      <button type="button" data-os="windows" aria-pressed="false">Windows (PowerShell)</button>
+      <button type="button" data-os="unix" aria-pressed="false">macOS / Linux</button>
+    </div>
+    <div class="code"><pre><code data-gen="install"></code></pre></div>
+    <ul>
+      <li><code>pip install -e .</code> installs the <code>mvg</code> command (package <code>mvgen</code>) into the virtual environment.</li>
+      <li><code>playwright install chromium</code> downloads the headless browser that renders brand cards.</li>
+      <li data-show="os=windows">If PowerShell blocks <code>Activate.ps1</code>, run <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code> once, then try again.</li>
+      <li data-show="os=unix">If <code>python</code> is not found, use <code>python3</code>.</li>
+      <li>Activate the virtual environment again in every new terminal before you run <code>mvg</code>.</li>
+      <li>No separate ffmpeg install: <code>pip install -e .</code> brings a bundled ffmpeg through <code>imageio-ffmpeg</code>.</li>
+    </ul>
+    <h3>Create a project folder</h3>
+    <p>Each film lives in its own folder. <code>mvg init</code> creates <code>studio.yaml</code>, <code>brand.yaml</code> and <code>brief.yaml</code>; you will replace them with the files this guide makes.</p>
+    <div class="field">
+      <label for="f-dir">Folder name</label>
+      <input type="text" id="f-dir" data-k="project.dir" class="mono" spellcheck="false" autocomplete="off">
+    </div>
+    <div class="code"><pre><code data-gen="init"></code></pre></div>
+    <p>To start from the example film instead: <code data-gen="initExample"></code>. Every command also accepts <code>-C DIR</code> to point at a project folder from anywhere.</p>
+    <details class="faq"><summary>Project folder layout</summary>
+<div class="code"><pre><code>studio.yaml   brand.yaml   brief.yaml   story.json   approvals.json
+brand/                      logo, fonts, screenshots you add
+renders/cast/               cast reference stills
+renders/keyframes/          first frame of each live-action shot
+renders/clips/              video clips
+renders/cards/              brand cards (MP4)
+renders/captions/           caption overlays
+audio/voice/                one WAV per narration line
+audio/music/                score segments
+build/                      story_prompt.md, review.html, the finished films</code></pre></div>
+    </details>
+  </section>
+
+  <!-- 3 -->
+  <section class="step" data-step="connect" data-title="Connect Google Cloud" hidden>
+    <div class="step-kicker">Step 3</div>
+    <h2>Connect Google Cloud</h2>
+    <p><code>mvg</code> uses Application Default Credentials (ADC): your own Google sign-in, stored by <code>gcloud</code> on your computer. No service account key is needed.</p>
+    <div class="row">
+      <div class="field">
+        <label for="f-project">Project ID</label>
+        <span class="why">The ID, not the name. Find it on the console home page.</span>
+        <input type="text" id="f-project" data-k="gcp.project" class="mono" placeholder="my-project-123" spellcheck="false" autocomplete="off">
+        <div class="hint" id="hint-project"></div>
+      </div>
+      <div class="field">
+        <label for="f-email">Your Google account email</label>
+        <span class="why">The account you sign in to gcloud with.</span>
+        <input type="email" id="f-email" data-k="gcp.email" class="mono" placeholder="you@example.com" spellcheck="false" autocomplete="off">
+        <div class="hint" id="hint-email"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="f-region">Video region (Veo)</label>
+        <span class="why">Veo is served from a region; Gemini 3, TTS and Lyria use <code>global</code>.</span>
+        <input type="text" id="f-region" data-k="gcp.region" class="mono" list="regions" spellcheck="false" autocomplete="off">
+        <datalist id="regions"><option value="us-central1"></option></datalist>
+      </div>
+      <div class="field">
+        <label for="f-bucket">Cloud Storage output (optional)</label>
+        <span class="why">Leave empty to receive videos directly. Or <code>my-bucket</code> / <code>gs://my-bucket/prefix</code> for Veo to write there.</span>
+        <input type="text" id="f-bucket" data-k="gcp.bucket" class="mono" placeholder="gs://my-bucket/mvg" spellcheck="false" autocomplete="off">
+      </div>
+    </div>
+    <div class="seg os-toggle" role="group" aria-label="Operating system">
+      <button type="button" data-os="windows" aria-pressed="false">Windows (PowerShell)</button>
+      <button type="button" data-os="unix" aria-pressed="false">macOS / Linux</button>
+    </div>
+    <h3>Run these once</h3>
+    <div class="code"><pre><code data-gen="gcloud"></code></pre></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Command</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><code>gcloud auth login</code></td><td>Signs the gcloud CLI in as you.</td></tr>
+        <tr><td><code>gcloud config set project</code></td><td>Makes your project the default for gcloud commands.</td></tr>
+        <tr><td><code>gcloud services enable aiplatform.googleapis.com</code></td><td>Turns on Vertex AI, which serves every model mvg uses. Needs permission to enable services (Owner, Editor or Service Usage Admin).</td></tr>
+        <tr><td><code>gcloud auth application-default login</code></td><td>Creates the ADC credentials that <code>mvg</code> (the Python client) uses.</td></tr>
+        <tr><td><code>gcloud auth application-default set-quota-project</code></td><td>Bills API quota for ADC calls to your project. Without it some APIs refuse user credentials.</td></tr>
+        <tr><td><code>add-iam-policy-binding</code></td><td>Grants you the two roles below. Only an Owner or IAM admin can run it.</td></tr>
+        <tr data-show="gcp.bucket=*"><td><code>storage</code> lines</td><td>Turn on Cloud Storage and let you write to the bucket, because <code>output.gcs_uri</code> is set.</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Permissions and why</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Role</th><th>Needed for</th></tr></thead>
+      <tbody>
+        <tr><td><code>roles/aiplatform.user</code><br>Vertex AI User</td><td>Calling the models: story, images, video, voice, music. It contains <code>aiplatform.endpoints.predict</code>, which <code>mvg doctor</code> checks. <strong>Required.</strong></td></tr>
+        <tr><td><code>roles/serviceusage.serviceUsageConsumer</code><br>Service Usage Consumer</td><td>Using your project as the ADC quota project (<code>serviceusage.services.use</code>). <strong>Required</strong> unless you already have Owner or Editor.</td></tr>
+        <tr><td><code>roles/storage.objectAdmin</code> on the bucket</td><td>Only if you set a Cloud Storage output: Veo writes clips there and mvg downloads them.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">
+      <p><strong>Shortcut:</strong> the repo ships setup scripts that run the same steps (sign-in, API, quota project, role grants, and the bucket grant if you give a bucket). Not an owner? Skip the grants and send your admin the message below.</p>
+      <div class="code"><pre><code data-gen="setupScript"></code></pre></div>
+    </div>
+    <h3>Not an owner? Send this to your admin</h3>
+    <p>If the <code>add-iam-policy-binding</code> or <code>services enable</code> lines fail with <code>PERMISSION_DENIED</code>, ask a project Owner or IAM admin to run them for you:</p>
+    <textarea id="admin-msg" class="mono" rows="12" readonly aria-label="Message for your admin"></textarea>
+    <div class="btn-row"><button type="button" class="btn btn-sm" data-copy-from="admin-msg">Copy message</button></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="step" data-step="test" data-title="Test the connection" hidden>
+    <div class="step-kicker">Step 4</div>
+    <h2>Test the connection</h2>
+    <h3>a. On your computer: <code>mvg doctor</code></h3>
+    <p>Run it in your project folder. It checks the tools, your sign-in, the project and every model in <code>studio.yaml</code>.</p>
+    <div class="code"><pre><code data-gen="doctor"></code></pre></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Check</th><th>What it means</th><th>If it says FAIL or WARN</th></tr></thead>
+      <tbody>
+        <tr><td>Python</td><td>Python 3.10 or newer runs mvg.</td><td>Install a newer Python, recreate <code>.venv</code>, <code>pip install -e .</code></td></tr>
+        <tr><td>ffmpeg</td><td>The bundled ffmpeg (from <code>imageio-ffmpeg</code>) is found (assembly).</td><td>Reinstall in the venv: <code>pip install -e .</code></td></tr>
+        <tr><td>Playwright</td><td>Headless Chromium is installed (cards).</td><td><code>playwright install chromium</code> inside the venv.</td></tr>
+        <tr><td>ADC credentials</td><td>Application Default Credentials exist.</td><td><code>gcloud auth application-default login</code></td></tr>
+        <tr><td>Quota project</td><td>ADC bills quota to your project.</td><td><code>gcloud auth application-default set-quota-project PROJECT</code>; needs <code>roles/serviceusage.serviceUsageConsumer</code>.</td></tr>
+        <tr><td>API enabled</td><td><code>aiplatform.googleapis.com</code> is on.</td><td><code>gcloud services enable aiplatform.googleapis.com</code> (or ask your admin).</td></tr>
+        <tr><td>IAM <code>aiplatform.endpoints.predict</code></td><td>You may call models in the project.</td><td>Grant <code>roles/aiplatform.user</code> (step 3).</td></tr>
+        <tr><td>Story model</td><td>The story LLM answers a tiny request. For Gemini this is a real call in your project, so it proves access.</td><td>Check <code>models.story</code>: model id, location, provider.</td></tr>
+        <tr><td>Image, TTS, video, music models</td><td>Each model id exists (a Vertex AI publisher model lookup). The lookup is not project-scoped, so it does not prove your project can call the model. <code>--deep</code> makes a small TTS and image call, which does.</td><td>404: wrong id or region (Veo is regional, Gemini 3 models are <code>global</code>). If the id exists but a real call fails, your project may need access to that preview model.</td></tr>
+        <tr><td>Story LLM key</td><td>For <code>openai</code> or <code>anthropic</code>: the key's environment variable is set.</td><td>Set the variable named in <code>api_key_env</code> (step 5). Not needed for <code>gemini</code> or <code>manual</code>.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>b. In this browser (optional)</h3>
+    <p>A quick check of the project, the API, your permission and a Gemini call, without installing anything. Get a short-lived token on your computer:</p>
+    <div class="code"><pre><code>gcloud auth print-access-token</code></pre></div>
+    <div class="callout warn">
+      <p>The token expires in about an hour and acts as you. This page keeps it in this tab's memory only: it is never saved, and it is sent only to Google APIs (<code>oauth2</code>, <code>serviceusage</code>, <code>cloudresourcemanager</code>, <code>aiplatform.googleapis.com</code>). Reloading the page forgets it.</p>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="f-token">Access token</label>
+        <input type="password" id="f-token" class="mono" autocomplete="off" spellcheck="false" placeholder="ya29...">
+      </div>
+      <div class="field">
+        <label for="f-project-2">Project ID</label>
+        <input type="text" id="f-project-2" data-k="gcp.project" class="mono" placeholder="my-project-123" spellcheck="false" autocomplete="off">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" id="run-checks">Run checks</button>
+      <button type="button" class="btn" id="forget-token">Forget token</button>
+      <span class="status" id="check-status" role="status"></span>
+    </div>
+    <ul class="results" id="check-results" aria-live="polite"></ul>
+    <p class="status">These checks use the story model <code data-gen="pingModel"></code> on <code>global</code>. For a full check including Veo, TTS and Lyria, run <code>mvg doctor --deep</code>.</p>
+  </section>
+
+  <!-- 5 -->
+  <section class="step" data-step="models" data-title="Choose models" hidden>
+    <div class="step-kicker">Step 5</div>
+    <h2>Choose models</h2>
+    <p>This makes <code>studio.yaml</code>. The defaults work; change them only if you need to.</p>
+
+    <fieldset>
+      <legend>Story writer (any LLM)</legend>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="story-provider" data-k="story.provider" value="gemini"><span><strong>Gemini on Vertex AI</strong><small>Uses your Google Cloud project. No extra key.</small></span></label>
+        <label class="choice"><input type="radio" name="story-provider" data-k="story.provider" value="openai"><span><strong>OpenAI-compatible</strong><small>OpenAI, OpenRouter, Groq, Ollama (<code>http://localhost:11434/v1</code>), LM Studio, vLLM.</small></span></label>
+        <label class="choice"><input type="radio" name="story-provider" data-k="story.provider" value="anthropic"><span><strong>Anthropic</strong><small>Claude models with your Anthropic key.</small></span></label>
+        <label class="choice"><input type="radio" name="story-provider" data-k="story.provider" value="manual"><span><strong>Any chat app (copy-paste)</strong><small><code>mvg story prompt</code> writes the prompt; paste the reply into <code>story.json</code>.</small></span></label>
+      </div>
+      <div class="subpanel" data-show="story.provider=gemini">
+        <div class="row">
+          <div class="field"><label for="f-sg-model">Model</label><input type="text" id="f-sg-model" data-k="story.gemini.model" class="mono" spellcheck="false"></div>
+          <div class="field"><label for="f-sg-loc">Location</label><input type="text" id="f-sg-loc" data-k="story.gemini.location" class="mono" spellcheck="false"></div>
+        </div>
+      </div>
+      <div class="subpanel" data-show="story.provider=openai">
+        <div class="row-3 row">
+          <div class="field"><label for="f-so-model">Model</label><input type="text" id="f-so-model" data-k="story.openai.model" class="mono" spellcheck="false"></div>
+          <div class="field"><label for="f-so-url">base_url</label><input type="text" id="f-so-url" data-k="story.openai.base_url" class="mono" spellcheck="false"></div>
+          <div class="field"><label for="f-so-env">api_key_env</label><input type="text" id="f-so-env" data-k="story.openai.api_key_env" class="mono" spellcheck="false"></div>
+        </div>
+        <p class="hint">Works with any OpenAI-compatible endpoint: OpenRouter (<code>https://openrouter.ai/api/v1</code>), Groq (<code>https://api.groq.com/openai/v1</code>), Ollama (<code>http://localhost:11434/v1</code>), LM Studio, vLLM.</p>
+      </div>
+      <div class="subpanel" data-show="story.provider=anthropic">
+        <div class="row">
+          <div class="field"><label for="f-sa-model">Model</label><input type="text" id="f-sa-model" data-k="story.anthropic.model" class="mono" spellcheck="false"></div>
+          <div class="field"><label for="f-sa-env">api_key_env</label><input type="text" id="f-sa-env" data-k="story.anthropic.api_key_env" class="mono" spellcheck="false"></div>
+        </div>
+      </div>
+      <div data-show="story.provider=openai|anthropic">
+        <p><strong>API keys go in environment variables, never in files.</strong> <code>studio.yaml</code> only stores the variable's name. Set it in the terminal where you run <code>mvg</code>:</p>
+        <div class="code"><pre><code data-gen="envKey"></code></pre></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Video</legend>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="video-provider" data-k="video.provider" value="veo"><span><strong>Veo</strong><small>Regional endpoint. Animates the approved keyframe.</small></span></label>
+        <label class="choice"><input type="radio" name="video-provider" data-k="video.provider" value="omni"><span><strong>Gemini Omni</strong><small>Through the Interactions API on <code>global</code>.</small></span></label>
+      </div>
+      <div class="subpanel" data-show="video.provider=veo">
+        <div class="row">
+          <div class="field"><label for="f-veo-model">Model</label><input type="text" id="f-veo-model" data-k="video.veo.model" class="mono" spellcheck="false"></div>
+          <div class="field"><label for="f-veo-loc">Location</label><input type="text" id="f-veo-loc" data-k="gcp.region" class="mono" spellcheck="false"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="f-veo-res">Resolution</label><select id="f-veo-res" data-k="video.resolution"><option value="720p">720p</option><option value="1080p">1080p</option></select><div class="hint">Veo 3.1 makes 1080p and 4k only as 8 s clips, so at 1080p the CLI forces <code>shot.duration</code> to 8 (the scene's <code>seconds</code> still trims it). 720p allows 4, 6 or 8 s.</div></div>
+          <div class="field"><label for="f-veo-audio">generate_audio</label><select id="f-veo-audio" data-k="video.generate_audio"><option value="false">false (recommended)</option><option value="true">true</option></select></div>
+        </div>
+      </div>
+      <div class="subpanel" data-show="video.provider=omni">
+        <div class="row-3 row">
+          <div class="field"><label for="f-omni-model">Model</label><input type="text" id="f-omni-model" data-k="video.omni.model" class="mono" spellcheck="false"></div>
+          <div class="field"><label for="f-omni-loc">Location</label><input type="text" id="f-omni-loc" data-k="video.omni.location" class="mono" spellcheck="false"></div>
+          <div class="field"><label for="f-omni-res">Resolution</label><select id="f-omni-res" data-k="video.resolution"><option value="720p">720p</option><option value="1080p">1080p</option></select></div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Images, voice, music</legend>
+      <div class="row">
+        <div class="field"><label for="f-img">Image model (cast stills, keyframes)</label><input type="text" id="f-img" data-k="image.model" class="mono" spellcheck="false"></div>
+        <div class="field"><label for="f-img-loc">Image location</label><input type="text" id="f-img-loc" data-k="image.location" class="mono" spellcheck="false"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="f-tts">Voice (TTS) model</label><input type="text" id="f-tts" data-k="tts.model" class="mono" spellcheck="false"></div>
+        <div class="field"><label for="f-tts-loc">TTS location</label><input type="text" id="f-tts-loc" data-k="tts.location" class="mono" spellcheck="false"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="f-music">Music model</label><input type="text" id="f-music" data-k="music.model" class="mono" spellcheck="false"></div>
+        <div class="field"><label for="f-music-loc">Music location</label><input type="text" id="f-music-loc" data-k="music.location" class="mono" spellcheck="false"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="f-par">Parallel requests</label><span class="why">Concurrent image or video requests. Lower it if you see 429 errors.</span><input type="number" id="f-par" data-k="limits.parallel" min="1" max="16" step="1"></div>
+        <div class="field"><label for="f-project-3">Project ID</label><span class="why">From step 3.</span><input type="text" id="f-project-3" data-k="gcp.project" class="mono" placeholder="your-gcp-project-id" spellcheck="false" autocomplete="off"></div>
+      </div>
+    </fieldset>
+
+    <h3>studio.yaml</h3>
+    <div class="code tall"><pre><code data-gen="studio" id="out-studio"></code></pre></div>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" data-download="studio">Download studio.yaml</button>
+      <button type="button" class="btn" data-copy-from="out-studio">Copy</button>
+      <button type="button" class="btn" id="reset-models">Reset to defaults</button>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="step" data-step="brand" data-title="Brand" hidden>
+    <div class="step-kicker">Step 6</div>
+    <h2>Brand</h2>
+    <p>Cards use the colors, fonts and logo. Every generated shot gets the look. The narrator uses the voice. This makes <code>brand.yaml</code>.</p>
+    <div class="btn-row"><button type="button" class="btn" data-example="brand">Load example</button><button type="button" class="btn" data-clear="brand">Clear</button></div>
+
+    <div class="brand-layout">
+    <div class="brand-fields">
+        <div class="row">
+          <div class="field"><label for="f-b-name">Name</label><span class="why">Shown on the title and end cards.</span><input type="text" id="f-b-name" data-k="brand.name" placeholder="Kettle &amp; Kite"></div>
+          <div class="field"><label for="f-b-tag">Tagline</label><span class="why">One short line. Often the end card headline.</span><input type="text" id="f-b-tag" data-k="brand.tagline" placeholder="Your usual, ready when you are."></div>
+        </div>
+
+    <fieldset>
+      <legend>Colors</legend>
+      <div class="colors">
+        <div class="color-field"><label for="c-background">background</label><span class="why">Stage behind cards</span><div class="inline"><input type="color" data-k="brand.colors.background" data-color aria-label="background color picker"><input type="text" id="c-background" data-k="brand.colors.background" spellcheck="false"></div></div>
+        <div class="color-field"><label for="c-surface">surface</label><span class="why">Card panels</span><div class="inline"><input type="color" data-k="brand.colors.surface" data-color aria-label="surface color picker"><input type="text" id="c-surface" data-k="brand.colors.surface" spellcheck="false"></div></div>
+        <div class="color-field"><label for="c-primary">primary</label><span class="why">Rules, highlights, buttons</span><div class="inline"><input type="color" data-k="brand.colors.primary" data-color aria-label="primary color picker"><input type="text" id="c-primary" data-k="brand.colors.primary" spellcheck="false"></div></div>
+        <div class="color-field"><label for="c-accent">accent</label><span class="why">Headlines</span><div class="inline"><input type="color" data-k="brand.colors.accent" data-color aria-label="accent color picker"><input type="text" id="c-accent" data-k="brand.colors.accent" spellcheck="false"></div></div>
+        <div class="color-field"><label for="c-text">text</label><span class="why">Body text</span><div class="inline"><input type="color" data-k="brand.colors.text" data-color aria-label="text color picker"><input type="text" id="c-text" data-k="brand.colors.text" spellcheck="false"></div></div>
+        <div class="color-field"><label for="c-muted">muted</label><span class="why">Small print, labels</span><div class="inline"><input type="color" data-k="brand.colors.muted" data-color aria-label="muted color picker"><input type="text" id="c-muted" data-k="brand.colors.muted" spellcheck="false"></div></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Fonts and logo</legend>
+      <div class="row">
+        <div class="field"><label for="f-b-hf">Heading font</label><span class="why">A <a href="https://fonts.google.com/">Google Fonts</a> family name, or a font file or installed font (see below).</span><input type="text" id="f-b-hf" data-k="brand.fonts.heading" list="font-list" placeholder="Fraunces"></div>
+        <div class="field"><label for="f-b-bf">Body font</label><span class="why">Used for sub lines, lists and labels.</span><input type="text" id="f-b-bf" data-k="brand.fonts.body" list="font-list" placeholder="Inter"></div>
+      </div>
+      <datalist id="font-list">
+        <option value="Inter"></option><option value="Roboto"></option><option value="Open Sans"></option><option value="Lato"></option>
+        <option value="Montserrat"></option><option value="Poppins"></option><option value="DM Sans"></option><option value="Manrope"></option>
+        <option value="Work Sans"></option><option value="IBM Plex Sans"></option><option value="Space Grotesk"></option><option value="Nunito"></option>
+        <option value="Fraunces"></option><option value="Playfair Display"></option><option value="DM Serif Display"></option><option value="Merriweather"></option>
+        <option value="Lora"></option><option value="Libre Baskerville"></option><option value="Source Serif 4"></option><option value="Archivo"></option>
+      </datalist>
+      <div class="field"><label for="f-b-logo">Logo path (optional)</label><span class="why">Put the file in the project's <code>brand/</code> folder: a transparent PNG or SVG. Leave empty for no logo.</span><input type="text" id="f-b-logo" data-k="brand.logo" class="mono" placeholder="brand/logo.png" spellcheck="false"></div>
+      <p class="hint">Fonts can be a Google Fonts family name (loaded when cards render), a font file: <code>heading: {family: MyFont, file: brand/fonts/MyFont.ttf}</code>, or a font installed on your computer, with nothing loaded: <code>body: {family: Arial, system: true}</code>. Edit <code>brand.yaml</code> for the last two.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Look</legend>
+      <div class="field">
+        <label for="f-b-look">Look of every AI shot</label>
+        <span class="why">Grade words added to every keyframe and video prompt so all shots match. Describe light, color and camera, not content.</span>
+        <div class="chips" id="look-chips">
+          <button type="button" class="chip" data-look="warm">Warm documentary</button>
+          <button type="button" class="chip" data-look="bright">Bright modern product</button>
+          <button type="button" class="chip" data-look="moody">Moody cinematic</button>
+        </div>
+        <textarea id="f-b-look" data-k="brand.look" rows="3"></textarea>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Voice</legend>
+      <div class="row">
+        <div class="field"><label for="f-b-voice">Narrator voice</label><span class="why">A Gemini TTS prebuilt voice.</span><select id="f-b-voice" data-k="brand.voice.name"></select></div>
+        <div class="field"><label for="f-b-dir">Voice direction</label><span class="why">How to read: pace, warmth, energy. Sent with every line.</span><textarea id="f-b-dir" data-k="brand.voice.direction" rows="3"></textarea></div>
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label for="f-b-rules">Rules (one per line)</label>
+      <span class="why">Brand rules the story writer and the shot prompts must follow.</span>
+      <textarea id="f-b-rules" data-k="brand.rules" rows="3"></textarea>
+    </div>
+    </div>
+    <aside class="brand-aside" aria-label="Brand preview">
+      <div class="brand-sticky">
+        <div class="label-sm">Live preview: title card</div>
+        <div class="brand-card" id="brand-card" aria-label="Title card preview in your colors and fonts" role="img">
+          <div class="bc-panel">
+            <div class="bc-eyebrow">Introducing</div>
+            <div class="bc-head" id="bc-head">Your brand</div>
+            <div class="bc-rule"></div>
+            <div class="bc-sub" id="bc-sub">Your tagline</div>
+          </div>
+          <div class="bc-foot" id="bc-foot">heading · body</div>
+        </div>
+        <div class="swatches" id="swatches"></div>
+        <div class="contrast" id="contrast"></div>
+        <p class="hint">Fonts load from Google Fonts for this preview only. The real cards are rendered by <code>mvg cards</code>. Check your branding on the real templates in seconds with <code>mvg cards --posters</code> (step 9).</p>
+      </div>
+    </aside>
+    </div>
+
+    <h3>brand.yaml</h3>
+    <div class="code tall"><pre><code data-gen="brand" id="out-brand"></code></pre></div>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" data-download="brand">Download brand.yaml</button>
+      <button type="button" class="btn" data-copy-from="out-brand">Copy</button>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="step" data-step="brief" data-title="Brief" hidden>
+    <div class="step-kicker">Step 7</div>
+    <h2>Brief: the right questions</h2>
+    <p>The story prompt includes this file word for word. Write facts only; the writer may not add claims of its own. This makes <code>brief.yaml</code>.</p>
+    <div class="btn-row"><button type="button" class="btn" data-example="brief">Load example</button><button type="button" class="btn" data-clear="brief">Clear</button></div>
+
+    <div class="field">
+      <label for="f-r-purpose">Purpose</label>
+      <span class="why">Sets the structure: a teaser hides the product, an explainer shows steps, a recruiting film shows people.</span>
+      <div class="chips" id="purpose-chips">
+        <button type="button" class="chip" data-purpose="Launch trailer">Launch trailer</button>
+        <button type="button" class="chip" data-purpose="Teaser">Teaser</button>
+        <button type="button" class="chip" data-purpose="Explainer">Explainer</button>
+        <button type="button" class="chip" data-purpose="Recruiting film">Recruiting</button>
+        <button type="button" class="chip" data-purpose="Customer story">Customer story</button>
+        <button type="button" class="chip" data-purpose="Event recap">Event recap</button>
+      </div>
+      <input type="text" id="f-r-purpose" data-k="brief.purpose" placeholder="Launch trailer for a new ordering app">
+    </div>
+    <div class="field"><label for="f-r-aud">Audience</label><span class="why">Who watches, and where. Decides tone and pacing.</span><input type="text" id="f-r-aud" data-k="brief.audience"></div>
+    <div class="row">
+      <div class="field">
+        <label for="f-r-len">Target length</label><span class="why">The writer must land within ±10%.</span>
+        <select id="f-r-len" data-k="brief.length">
+          <option value="15">15 s</option><option value="30">30 s</option><option value="60">60 s</option><option value="90">90 s</option><option value="120">120 s</option><option value="custom">Custom</option>
+        </select>
+        <div data-show="brief.length=custom"><label class="hint" for="f-r-lenc">Seconds</label><input type="number" id="f-r-lenc" data-k="brief.lengthCustom" min="5" max="600" step="1"></div>
+      </div>
+      <div class="field">
+        <span class="label">Aspect ratio</span><span class="why">16:9 for screens and YouTube; 9:16 for phones and stories.</span>
+        <div class="choices two" role="radiogroup" aria-label="Aspect ratio">
+          <label class="choice"><input type="radio" name="aspect" data-k="brief.aspect" value="16:9"> 16:9</label>
+          <label class="choice"><input type="radio" name="aspect" data-k="brief.aspect" value="9:16"> 9:16</label>
+        </div>
+      </div>
+    </div>
+    <div class="field"><label for="f-r-lang">Language</label><span class="why">Voiceover and card text language.</span><input type="text" id="f-r-lang" data-k="brief.language"></div>
+    <div class="field"><label for="f-r-key">Key message (one sentence)</label><span class="why">The one thing a viewer should remember.</span><input type="text" id="f-r-key" data-k="brief.key_message"></div>
+    <div class="field"><label for="f-r-angle">Story angle</label><span class="why">The situation the film opens in. A real moment beats a feature list.</span><textarea id="f-r-angle" data-k="brief.story_angle" rows="2"></textarea></div>
+    <div class="field"><label for="f-r-beats">Beats (one per line)</label><span class="why">The order of ideas. Roughly one or two scenes each.</span><textarea id="f-r-beats" data-k="brief.beats" rows="5"></textarea></div>
+    <div class="field"><label for="f-r-proof">Proof points (one per line)</label><span class="why">Facts and numbers you can stand behind. The writer may only use these on stat cards.</span><textarea id="f-r-proof" data-k="brief.proof_points" rows="3"></textarea></div>
+    <div class="field"><label for="f-r-quotes">Quotes (one per line)</label><span class="why">Only real, approved quotes, with the speaker. Leave empty if you have none.</span><textarea id="f-r-quotes" data-k="brief.quotes" rows="2" placeholder="&quot;It changed my mornings.&quot; (Sam, a customer, approved 2026-10-01)"></textarea></div>
+    <div class="field"><label for="f-r-cta">Call to action</label><span class="why">What to do next. Goes on the end card.</span><input type="text" id="f-r-cta" data-k="brief.call_to_action"></div>
+    <div class="field"><label for="f-r-chars">Characters (one per line)</label><span class="why">Fictional roles, not real people. The writer turns them into a cast with a fixed look.</span><textarea id="f-r-chars" data-k="brief.characters" rows="3"></textarea></div>
+    <div class="field"><label for="f-r-set">Settings (one per line)</label><span class="why">Where the live-action shots happen.</span><textarea id="f-r-set" data-k="brief.settings" rows="3"></textarea></div>
+    <div class="row">
+      <div class="field"><label for="f-r-mood">Mood</label><span class="why">How it should feel.</span><input type="text" id="f-r-mood" data-k="brief.mood"></div>
+      <div class="field"><label for="f-r-mm">Music mood</label><span class="why">Instruments and arc for the score.</span><input type="text" id="f-r-mm" data-k="brief.music_mood"></div>
+    </div>
+    <div class="field"><label for="f-r-shots">Screenshots (one path per line)</label><span class="why">Product screens for <code>screen</code> and <code>feature</code> cards, e.g. <code>brand/screens/home.png</code>. AI footage never shows UIs.</span><textarea id="f-r-shots" data-k="brief.screenshots" rows="2" class="mono"></textarea></div>
+    <div class="row">
+      <div class="field"><label for="f-r-inc">Must include (one per line)</label><span class="why">Non-negotiables.</span><textarea id="f-r-inc" data-k="brief.must_include" rows="3"></textarea></div>
+      <div class="field"><label for="f-r-avoid">Must avoid (one per line)</label><span class="why">Claims, topics or visuals that must not appear.</span><textarea id="f-r-avoid" data-k="brief.must_avoid" rows="3"></textarea></div>
+    </div>
+
+    <h3>brief.yaml</h3>
+    <div class="code tall"><pre><code data-gen="brief" id="out-brief"></code></pre></div>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" data-download="brief">Download brief.yaml</button>
+      <button type="button" class="btn" data-copy-from="out-brief">Copy</button>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="step" data-step="story" data-title="Write the story" hidden>
+    <div class="step-kicker">Step 8</div>
+    <h2>Write the story</h2>
+    <p>The story is one JSON file, <code>story.json</code>: scenes in order, each a brand card or a live-action shot, with voice lines and music cues. Any LLM can write it from the prompt below. Then check it here.</p>
+    <div class="callout warn" id="story-missing" hidden><p>The brand or brief is still empty. Fill in steps 6 and 7, or use <em>Load example</em> there.</p></div>
+
+    <div class="tabs" role="tablist" aria-label="How to write the story">
+      <button type="button" role="tab" id="tab-paste" aria-controls="tp-paste" aria-selected="true">Any LLM (copy-paste)</button>
+      <button type="button" role="tab" id="tab-gemini" aria-controls="tp-gemini" aria-selected="false" tabindex="-1">Gemini in your browser</button>
+      <button type="button" role="tab" id="tab-cli" aria-controls="tp-cli" aria-selected="false" tabindex="-1">CLI</button>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="tp-paste" aria-labelledby="tab-paste">
+      <p>Copy this prompt into any chat app (Gemini, ChatGPT, Claude, a local model). It contains your brief, your brand and the schema. Paste the reply into the box below.</p>
+      <textarea id="prompt-out" class="mono" rows="12" readonly aria-label="Story prompt"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn btn-primary" data-copy-from="prompt-out">Copy prompt</button>
+        <button type="button" class="btn" id="dl-prompt">Download story_prompt.md</button>
+        <span class="status" id="prompt-status"></span>
+      </div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="tp-gemini" aria-labelledby="tab-gemini" hidden>
+      <p>Calls Gemini on Vertex AI in your project with the token from step 4: model <code data-gen="pingModel"></code> on <code>global</code>, JSON output, temperature 0.8. It is billed to your project.</p>
+      <div class="callout warn" id="gemini-no-token"><p>No token in memory. <a href="#test">Go to step 4</a>, paste a token from <code>gcloud auth print-access-token</code>, then come back.</p></div>
+      <div class="btn-row">
+        <button type="button" class="btn btn-primary" id="gemini-write">Write the story with Gemini</button>
+        <button type="button" class="btn" id="gemini-cancel" hidden>Cancel</button>
+        <span class="status" id="gemini-status" role="status"></span>
+      </div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="tp-cli" aria-labelledby="tab-cli" hidden>
+      <p>In your project folder, with the downloaded files in place:</p>
+      <div class="code"><pre><code>mvg story write      # calls the story LLM from studio.yaml, writes story.json
+mvg story prompt     # or: writes build/story_prompt.md to paste into any LLM
+mvg story check      # validates story.json and reports timing</code></pre></div>
+    </div>
+
+    <h3>Check the story</h3>
+    <div class="field">
+      <label for="story-in">story.json</label>
+      <span class="why">Paste the reply. Markdown <code>```</code> fences are removed for you.</span>
+      <textarea id="story-in" data-k="story.text" class="mono" rows="12" spellcheck="false" placeholder="{ &quot;title&quot;: ... }"></textarea>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" id="validate">Validate</button>
+      <button type="button" class="btn" id="load-example-story">Load example story</button>
+      <button type="button" class="btn" id="dl-story">Download story.json</button>
+    </div>
+    <div id="story-result" aria-live="polite"></div>
+  </section>
+
+  <!-- 9 -->
+  <section class="step" data-step="make" data-title="Make the film" hidden>
+    <div class="step-kicker">Step 9</div>
+    <h2>Make the film</h2>
+    <p>Cards first, then video. Run these in order in your project folder. Each step skips outputs that already exist (use <code>--force</code> to remake), so you can stop and resume at any point. <code>mvg run</code> runs them all and stops at the approval gate.</p>
+    <div class="seg os-toggle" role="group" aria-label="Operating system">
+      <button type="button" data-os="windows" aria-pressed="false">Windows (PowerShell)</button>
+      <button type="button" data-os="unix" aria-pressed="false">macOS / Linux</button>
+    </div>
+    <div id="make-list"></div>
+  </section>
+
+  <!-- 10 -->
+  <section class="step" data-step="help" data-title="Troubleshooting &amp; FAQ" hidden>
+    <div class="step-kicker">Step 10</div>
+    <h2>Troubleshooting and FAQ</h2>
+    <details class="faq"><summary>403 PERMISSION_DENIED</summary>
+      <p>Your account lacks a role in the project, or the quota project is not set. Check the project ID, then grant the roles (an Owner or IAM admin must run this):</p>
+      <div class="code"><pre><code data-gen="grant"></code></pre></div>
+      <p>Then run <code>mvg doctor</code> again. Role changes can take a minute or two to apply.</p>
+    </details>
+    <details class="faq"><summary>SERVICE_DISABLED / "API has not been used in project"</summary>
+      <p>Vertex AI is not enabled in the project:</p>
+      <div class="code"><pre><code data-gen="enable"></code></pre></div>
+      <p>If you see the error for <code>storage.googleapis.com</code>, you set <code>output.gcs_uri</code>; enable Cloud Storage too or set it back to <code>null</code>.</p>
+    </details>
+    <details class="faq"><summary>429 RESOURCE_EXHAUSTED</summary>
+      <p>You hit a rate limit or quota. Lower <code>limits.parallel</code> in <code>studio.yaml</code> (for example to 1) and run the same command again later. Finished outputs are skipped, so the step resumes where it stopped. Quotas are listed in the console under IAM &amp; Admin › Quotas.</p>
+    </details>
+    <details class="faq"><summary>404 model not found</summary>
+      <p>The model id is wrong, the model is in a different location, or your project has no access to a preview model. Veo is regional (for example <code>us-central1</code>); Gemini 3 models, TTS and Lyria use <code>global</code>. Check the ids in <code>studio.yaml</code> against the <a href="https://cloud.google.com/vertex-ai/generative-ai/docs/models">Vertex AI model list</a>.</p>
+    </details>
+    <details class="faq"><summary>ADC "quota project" warning</summary>
+      <p>Google client libraries warn when user credentials have no quota project. Set it, and make sure you have <code>roles/serviceusage.serviceUsageConsumer</code>:</p>
+      <div class="code"><pre><code data-gen="quota"></code></pre></div>
+    </details>
+    <details class="faq"><summary>Output blocked by safety filters</summary>
+      <p>Images or video can be filtered. Rephrase the shot: describe invented people by age range, look and clothing, never a real or famous person, brand, logo or readable text. Avoid medical, violent or child-related detail that is not needed. If people are blocked, check the model's <code>person_generation</code> setting. Then re-run only that scene with <code>--force</code> and its id.</p>
+    </details>
+    <details class="faq"><summary>Playwright browser missing</summary>
+      <p><code>mvg cards</code> needs Chromium. Inside the activated virtual environment run <code>playwright install chromium</code>. On Linux you may also need <code>playwright install-deps chromium</code>.</p>
+    </details>
+    <details class="faq"><summary>Fonts not loading on cards</summary>
+      <p>Card rendering loads Google Fonts by family name, which needs internet access. Check the spelling against <a href="https://fonts.google.com/">fonts.google.com</a>. Offline or with a custom font, put the file in <code>brand/fonts/</code> and use <code>heading: {family: MyFont, file: brand/fonts/MyFont.ttf}</code> in <code>brand.yaml</code>.</p>
+    </details>
+    <details class="faq"><summary>Change one scene and re-run only it</summary>
+      <p>Edit the scene in <code>story.json</code>, run <code>mvg story check</code>, then remake only that scene by passing its id with <code>--force</code>, for example:</p>
+      <div class="code"><pre><code>mvg keyframes s06-shelf --force
+mvg review
+mvg approve s06-shelf
+mvg clips s06-shelf --force
+mvg assemble</code></pre></div>
+      <p>For a card, <code>mvg cards s04-how --force</code>; for a changed voice line, <code>mvg voice s04-how --force</code>. To take back an approval: <code>mvg approve --revoke s06-shelf</code>.</p>
+    </details>
+    <details class="faq"><summary>What does it cost?</summary>
+      <p>All generation is billed by Google to your project; see <a href="https://cloud.google.com/vertex-ai/generative-ai/pricing">Vertex AI pricing</a>. <code>mvg plan</code> lists what will be generated (number of stills, keyframes, clip seconds, voice lines, music segments) so you can estimate before you run. Cards and the animatic are made on your computer; <code>mvg cards --posters</code> checks your branding in seconds, and the draft cut uses placeholder voice and music. Paid video is generated only for approved shots, and existing outputs are never regenerated without <code>--force</code>.</p>
+    </details>
+    <details class="faq"><summary>Is my data sent anywhere else?</summary>
+      <p>No. There is no backend. <code>mvg</code> talks only to the providers you configure (Google Cloud, and your story LLM if it is not Gemini). This site saves your answers in your browser's localStorage; tokens and keys are never saved. Use <em>Start over</em> in the sidebar to clear it.</p>
+    </details>
+    <p>Still stuck? Open an issue: <a href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini/issues">github.com/kirankumarduddu/multimodal-video-generator-gemini/issues</a> with the output of <code>mvg doctor</code> (remove anything private).</p>
+  </section>
+
+  <nav class="step-nav" aria-label="Step navigation">
+    <button type="button" class="btn" id="prev">← Back</button>
+    <span class="count" id="step-count"></span>
+    <button type="button" class="btn btn-primary" id="next">Next →</button>
+  </nav>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <span>Built by Kiran Kumar Duddu · Apache-2.0 · Not an official Google product.</span>
+    <span><a href="index.html">Home</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

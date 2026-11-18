@@ -1,0 +1,33 @@
+# What the film is for. The story prompt includes this file word for word, so write facts only.
+purpose: Launch trailer for a new ordering app
+audience: Regulars and neighbours of a small tea house, on social media and the shop's screen
+length_seconds: 60
+aspect_ratio: "16:9"
+language: English
+key_message: Your usual, ready when you walk in, without the queue.
+story_angle: A busy morning in a neighbourhood tea house, and the small ritual the app gives back.
+beats:
+  - The morning rush, and regulars who don't have time to wait
+  - Introducing the Kettle & Kite app
+  - Order your usual in two taps, pay ahead, pick up at the shelf
+  - Seasonal blends and a loyalty stamp on every cup
+  - Back to what the shop is about, people and tea
+proof_points:
+  - Opens 7 days a week from 7 AM
+  - Orders are ready in about 5 minutes
+quotes: []
+call_to_action: Download the app and get your first pot on us
+characters:
+  - The owner, a woman in her 50s who knows every regular
+  - A regular, a young nurse coming off a night shift
+settings:
+  - A small, warm tea house with wooden shelves of tea tins and big windows
+  - A rainy street outside at early morning
+mood: Warm, calm, human, a little playful
+music_mood: Gentle acoustic guitar and soft piano, rising to a bright, hopeful close
+screenshots: []
+must_include:
+  - The shop name on the title and end card
+must_avoid:
+  - Any real person's likeness
+  - Prices or discounts other than the call to action

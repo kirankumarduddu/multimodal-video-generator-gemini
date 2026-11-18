@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Multimodal Video Generator using Gemini</title>
+<meta name="description" content="A self-serve Python CLI that turns a brief and a brand into a finished trailer on your own Google Cloud project: cards first, then video.">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="alternate" type="text/plain" href="llms.txt" title="llms.txt">
+<script src="assets/common.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="logo" href="index.html"><span class="logo-mark" aria-hidden="true">mvg</span><span class="logo-name">Multimodal Video Generator</span> <span class="logo-sub">using Gemini</span></a>
+    <nav aria-label="Site">
+      <a href="#how">How it works</a>
+      <a href="guide.html">Guide</a>
+      <a href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Open source · Python CLI · Apache-2.0</div>
+    <h1>Turn a brief and a brand into a finished trailer, on your own Google Cloud project.</h1>
+    <p class="lead">Any LLM writes the story. Gemini models make the cast, keyframes, video, voice and music. Your brand cards are rendered exactly, and nothing paid is generated until you approve it.</p>
+    <div class="btn-row">
+      <a class="btn btn-gate" href="guide.html">Start the guided setup</a>
+      <a class="btn btn-ghost-light" href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini">View on GitHub</a>
+    </div>
+    <ul class="hero-facts">
+      <li>Runs on your computer</li>
+      <li>Billed to your own project</li>
+      <li>Approval gate before video</li>
+      <li>Free animatic preview</li>
+      <li>1080p master + 720p web and phone</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="section-intro"><strong>Cards first, then video.</strong> Cheap, exact assets are made and reviewed first. Video, the expensive part, is generated only for the shots you approve.</p>
+    <div class="diagram-wrap">
+      <svg class="diagram" viewBox="0 0 1200 430" role="img" aria-labelledby="dg-title dg-desc">
+        <title id="dg-title">Architecture of mvg</title>
+        <desc id="dg-desc">The brief and brand go to any LLM, which writes story.json. Stage 1, cards first, renders brand cards, cast stills and keyframes. A review and approve gate follows, with a free animatic preview. Stage 2 generates video clips with Veo or Gemini Omni, voice with Gemini TTS and music with Lyria. ffmpeg assembles the film into a 1080p master and 720p web and phone copies. Everything runs in your Google Cloud project with Vertex AI and ADC authentication, checked by mvg doctor.</desc>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="dg-arrowhead"></path>
+          </marker>
+        </defs>
+
+        <!-- cards bypass to assemble -->
+        <path d="M375,40 V18 H1082 V40" class="dg-line dg-dash dg-arrow"></path>
+        <rect x="560" y="8" width="330" height="20" rx="4" class="dg-label-bg"></rect>
+        <text x="725" y="22" text-anchor="middle" class="dg-ts">cards and captions go straight into the cut</text>
+
+        <!-- left: write -->
+        <rect x="20" y="40" width="88" height="54" rx="8" class="dg-box"></rect>
+        <text x="64" y="63" text-anchor="middle" class="dg-t dg-tb">Brief</text>
+        <text x="64" y="81" text-anchor="middle" class="dg-tm">brief.yaml</text>
+        <rect x="122" y="40" width="88" height="54" rx="8" class="dg-box"></rect>
+        <text x="166" y="63" text-anchor="middle" class="dg-t dg-tb">Brand</text>
+        <text x="166" y="81" text-anchor="middle" class="dg-tm">brand.yaml</text>
+        <path d="M64,94 V128" class="dg-line dg-arrow"></path>
+        <path d="M166,94 V128" class="dg-line dg-arrow"></path>
+        <rect x="20" y="132" width="190" height="86" rx="8" class="dg-box"></rect>
+        <text x="115" y="156" text-anchor="middle" class="dg-t dg-tb">Story · any LLM</text>
+        <text x="115" y="176" text-anchor="middle" class="dg-ts">Gemini · OpenAI-compatible</text>
+        <text x="115" y="193" text-anchor="middle" class="dg-ts">Anthropic · copy-paste</text>
+        <text x="115" y="209" text-anchor="middle" class="dg-tm">mvg story write</text>
+        <path d="M115,218 V250" class="dg-line dg-arrow"></path>
+        <path d="M45,254 H165 L185,274 V314 H45 Z" class="dg-box"></path>
+        <path d="M165,254 V274 H185" class="dg-line"></path>
+        <text x="115" y="283" text-anchor="middle" class="dg-t dg-tb">story.json</text>
+        <text x="115" y="302" text-anchor="middle" class="dg-ts">checked by the schema</text>
+        <path d="M185,290 H218 V175 H246" class="dg-line dg-arrow"></path>
+
+        <!-- stage 1 -->
+        <rect x="250" y="40" width="250" height="276" rx="12" class="dg-s1"></rect>
+        <text x="375" y="66" text-anchor="middle" class="dg-h dg-c1">Stage 1 · Cards first</text>
+        <text x="375" y="85" text-anchor="middle" class="dg-ts">cheap · exact · on brand</text>
+        <rect x="266" y="100" width="218" height="58" rx="8" class="dg-item"></rect>
+        <text x="280" y="124" class="dg-t dg-tb">Brand cards</text>
+        <text x="280" y="144" class="dg-ts">HTML → MP4, Playwright, 24 fps</text>
+        <rect x="266" y="168" width="218" height="58" rx="8" class="dg-item"></rect>
+        <text x="280" y="192" class="dg-t dg-tb">Cast stills</text>
+        <text x="280" y="212" class="dg-ts">Nano Banana Pro</text>
+        <rect x="266" y="236" width="218" height="58" rx="8" class="dg-item"></rect>
+        <text x="280" y="260" class="dg-t dg-tb">Keyframes</text>
+        <text x="280" y="280" class="dg-ts">Nano Banana Pro, one per shot</text>
+        <path d="M500,175 H526" class="dg-line dg-arrow"></path>
+
+        <!-- gate -->
+        <rect x="530" y="112" width="152" height="126" rx="12" class="dg-gate"></rect>
+        <text x="606" y="137" text-anchor="middle" class="dg-ts dg-gate-ink">GATE</text>
+        <text x="606" y="160" text-anchor="middle" class="dg-t dg-tb">Review &amp;</text>
+        <text x="606" y="179" text-anchor="middle" class="dg-t dg-tb">approve</text>
+        <text x="606" y="203" text-anchor="middle" class="dg-tm">mvg review</text>
+        <text x="606" y="221" text-anchor="middle" class="dg-tm">mvg approve</text>
+        <path d="M606,238 V260" class="dg-line dg-dash"></path>
+        <rect x="530" y="262" width="152" height="54" rx="10" class="dg-box dg-dash"></rect>
+        <text x="606" y="284" text-anchor="middle" class="dg-t dg-tb">Animatic</text>
+        <text x="606" y="303" text-anchor="middle" class="dg-ts">free preview cut</text>
+        <path d="M682,175 H706" class="dg-line dg-arrow"></path>
+
+        <!-- stage 2 -->
+        <rect x="710" y="40" width="250" height="276" rx="12" class="dg-s2"></rect>
+        <text x="835" y="66" text-anchor="middle" class="dg-h dg-c2">Stage 2 · Generate</text>
+        <text x="835" y="85" text-anchor="middle" class="dg-ts">billed · approved shots only</text>
+        <rect x="726" y="100" width="218" height="58" rx="8" class="dg-item"></rect>
+        <text x="740" y="124" class="dg-t dg-tb">Video clips</text>
+        <text x="740" y="144" class="dg-ts">Veo 3.1 or Gemini Omni</text>
+        <rect x="726" y="168" width="218" height="58" rx="8" class="dg-item"></rect>
+        <text x="740" y="192" class="dg-t dg-tb">Voice</text>
+        <text x="740" y="212" class="dg-ts">Gemini TTS, one take per line</text>
+        <rect x="726" y="236" width="218" height="58" rx="8" class="dg-item"></rect>
+        <text x="740" y="260" class="dg-t dg-tb">Music</text>
+        <text x="740" y="280" class="dg-ts">Lyria 3, one score per chapter</text>
+        <path d="M960,95 H981" class="dg-line dg-arrow"></path>
+
+        <!-- assemble + output -->
+        <rect x="985" y="40" width="195" height="116" rx="12" class="dg-box dg-strong"></rect>
+        <text x="1082" y="64" text-anchor="middle" class="dg-t dg-tb">Assemble · ffmpeg</text>
+        <text x="1082" y="86" text-anchor="middle" class="dg-ts">0.4 s crossfades, captions</text>
+        <text x="1082" y="104" text-anchor="middle" class="dg-ts">voice placed per scene</text>
+        <text x="1082" y="122" text-anchor="middle" class="dg-ts">music ducked under voice</text>
+        <text x="1082" y="140" text-anchor="middle" class="dg-ts">loudness −16 LUFS</text>
+        <path d="M1082,156 V184" class="dg-line dg-arrow"></path>
+        <rect x="985" y="188" width="195" height="128" rx="12" class="dg-dark"></rect>
+        <text x="1082" y="212" text-anchor="middle" class="dg-t dg-tb dg-tw">MP4</text>
+        <rect x="1003" y="222" width="159" height="24" rx="6" class="dg-pill"></rect>
+        <text x="1082" y="238" text-anchor="middle" class="dg-ts dg-tw">master · 1080p</text>
+        <rect x="1003" y="252" width="159" height="24" rx="6" class="dg-pill"></rect>
+        <text x="1082" y="268" text-anchor="middle" class="dg-ts dg-tw">web · 720p</text>
+        <rect x="1003" y="282" width="159" height="24" rx="6" class="dg-pill"></rect>
+        <text x="1082" y="298" text-anchor="middle" class="dg-ts dg-tw">phone · 720p</text>
+
+        <!-- bottom band -->
+        <rect x="20" y="346" width="1160" height="68" rx="12" class="dg-dark"></rect>
+        <text x="600" y="374" text-anchor="middle" class="dg-h dg-tw">Runs in your Google Cloud project</text>
+        <text x="600" y="398" text-anchor="middle" class="dg-ts dg-tw2">Vertex AI · ADC auth (your own gcloud sign-in) · IAM checked by mvg doctor · billed to your project</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="stages">
+  <div class="wrap">
+    <h2>Each stage, and the model behind it</h2>
+    <p class="section-intro">Every step is a command, and every step is idempotent: it skips outputs that already exist unless you pass <code>--force</code>. You can stop anywhere and pick up later.</p>
+    <div class="grid grid-3">
+      <div class="card"><h3><span class="stage-num">1</span>Brief and brand</h3><span class="model">brief.yaml · brand.yaml</span><p>You answer plain questions: purpose, audience, length, facts you can stand behind, colors, fonts, look and voice. The <a href="guide.html#brief">guide</a> writes the files.</p></div>
+      <div class="card"><h3><span class="stage-num">2</span>Story</h3><span class="model">any LLM → story.json</span><p>Gemini, any OpenAI-compatible endpoint, Anthropic, or copy-paste into any chat app. The reply must match the <a href="assets/story.schema.json">story schema</a>: scenes, cast, voice lines and music cues.</p></div>
+      <div class="card"><h3><span class="stage-num">3</span>Brand cards <span class="tag tag-free">free</span></h3><span class="model">HTML → MP4 · Playwright · 24 fps</span><p>Titles, lists, stats, quotes, flows, screens and the end card, rendered frame by frame in your exact colors, fonts and logo. Captions too. <code>mvg cards --posters</code> renders one still per card in seconds to check your branding first.</p></div>
+      <div class="card"><h3><span class="stage-num">4</span>Cast stills</h3><span class="model">Nano Banana Pro · gemini-3-pro-image</span><p>One reference still per invented person, so the same face and clothes appear in every shot.</p></div>
+      <div class="card"><h3><span class="stage-num">5</span>Keyframes</h3><span class="model">Nano Banana Pro · gemini-3-pro-image</span><p>The first frame of each live-action shot, in the brand look, using the cast stills.</p></div>
+      <div class="card gate"><h3><span class="stage-num">6</span>Review and approve <span class="tag tag-gate">gate</span></h3><span class="model">mvg review · mvg approve</span><p><code>build/review.html</code> shows every card, still, keyframe and the exact prompts. <code>mvg clips --animatic</code> turns keyframes into free Ken Burns moves; with placeholder voice and music, <code>mvg assemble</code> writes a draft cut to time the whole film.</p></div>
+      <div class="card"><h3><span class="stage-num">7</span>Video clips <span class="tag tag-billed">billed</span></h3><span class="model">Veo · veo-3.1-generate-001 (us-central1)<br>or Gemini Omni · gemini-omni-1.1-flash-preview (global, Interactions API)</span><p>Animates each approved keyframe. Unapproved shots are never sent.</p></div>
+      <div class="card"><h3><span class="stage-num">8</span>Voice and music</h3><span class="model">gemini-3.1-flash-tts-preview · lyria-3-pro-preview</span><p>Gemini TTS reads each line in the brand voice. Lyria scores each chapter from an instrumental brief.</p></div>
+      <div class="card"><h3><span class="stage-num">9</span>Assemble</h3><span class="model">ffmpeg</span><p>0.4 s crossfades, captions, voice placed per scene, music fitted per chapter and ducked under the voice by sidechain compression, loudness normalised to -16 LUFS. A 1080p master plus 720p web and phone copies.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="why">
+  <div class="wrap">
+    <h2>Why cards first</h2>
+    <div class="grid grid-2">
+      <div class="card"><h3>Cost</h3><p>Cards, cast stills and keyframes are cheap or free and fast to redo. Video is the expensive step, so it comes last and only for approved shots. The draft cut (animatic plus placeholder voice and music) lets you time the whole film before you pay for any video.</p></div>
+      <div class="card"><h3>Brand accuracy</h3><p>Words, numbers and logos are typeset from HTML in your fonts and colors, so they are always spelled and placed exactly. A video model never has to draw your logo.</p></div>
+      <div class="card"><h3>No text in AI footage</h3><p>Generated shots contain no readable text, logos, user interfaces or real people. Words live only on cards. That avoids garbled lettering and keeps product claims under your control.</p></div>
+      <div class="card"><h3>A consistent cast</h3><p>Each fictional person gets one reference still, and every keyframe is made from it. You approve faces and settings as stills, where changes are cheap, before they move.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="yours">
+  <div class="wrap">
+    <h2>Your project, your keys</h2>
+    <div class="grid grid-2">
+      <div>
+        <ul>
+          <li><strong>No backend.</strong> <code>mvg</code> runs on your computer. It talks only to Google Cloud in your project and, if you choose one, your story LLM provider.</li>
+          <li><strong>Your own sign-in.</strong> Google calls use Application Default Credentials from <code>gcloud</code>. Other providers' API keys are read from environment variables, never from files.</li>
+          <li><strong>Your bill.</strong> All generation is billed by Google to your project. See <a href="https://cloud.google.com/vertex-ai/generative-ai/pricing">Vertex AI pricing</a>.</li>
+          <li><strong>Checked before you spend.</strong> <code>mvg doctor</code> checks auth, the quota project, the API, your IAM permission and every model.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>This website</h3>
+        <p>The site is static: no backend, no analytics, no third-party scripts. The guide saves your answers in your browser's localStorage. Its optional connection test keeps your access token in the tab's memory only and sends it only to Google APIs. Reloading the page forgets it.</p>
+        <p>The only other outside request is Google Fonts, to preview your brand fonts in step 6.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="quickstart">
+  <div class="wrap">
+    <h2>Quick start</h2>
+    <p class="section-intro">The <a href="guide.html">guided setup</a> explains each line and writes your config files.</p>
+    <div class="code"><pre><code>git clone https://github.com/kirankumarduddu/multimodal-video-generator-gemini.git
+cd multimodal-video-generator-gemini
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1        # Windows; macOS/Linux: source .venv/bin/activate
+pip install -e .
+playwright install chromium
+mvg init my-film --example kettle-and-kite
+cd my-film                          # then set gcp.project in studio.yaml
+mvg doctor
+mvg run                             # stops at the approval gate</code></pre></div>
+  </div>
+</section>
+
+<section class="section alt" id="agents">
+  <div class="wrap">
+    <h2>For LLM agents</h2>
+    <div class="grid grid-2">
+      <div>
+        <p>Coding agents can drive <code>mvg</code> end to end. Start with:</p>
+        <ul>
+          <li><a href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini/blob/main/AGENTS.md">AGENTS.md</a>: how to set up, run and change the project (<a href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini/blob/main/CLAUDE.md">CLAUDE.md</a> for Claude Code).</li>
+          <li><a href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini/blob/main/README.md">README.md</a>: overview, install and usage.</li>
+          <li><a href="llms.txt">llms.txt</a>: a short map of the project and its docs for LLMs.</li>
+          <li><a href="assets/story.schema.json">story.schema.json</a> and <a href="assets/story_prompt.md">story_prompt.md</a>: the story contract and the prompt the CLI uses.</li>
+        </ul>
+      </div>
+      <div class="callout gate">
+        <p><strong>Keep a person at the gate.</strong> Agents should stop after <code>mvg review</code> and let a person open <code>build/review.html</code> and run <code>mvg approve</code> before any paid video is generated.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <span>Built by Kiran Kumar Duddu · Apache-2.0 · Not an official Google product.</span>
+    <span><a href="guide.html">Guide</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/kirankumarduddu/multimodal-video-generator-gemini">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

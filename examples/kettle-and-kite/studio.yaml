@@ -1,0 +1,22 @@
+# Which Google Cloud project and models to use. Run `mvg doctor` after editing.
+gcp:
+  project: your-gcp-project-id
+
+models:
+  # Story: any LLM. provider = gemini | openai | anthropic | manual
+  #   openai covers every OpenAI-compatible endpoint (OpenAI, OpenRouter, Groq, Ollama, LM Studio, vLLM...):
+  #     {provider: openai, model: gpt-5, base_url: https://api.openai.com/v1, api_key_env: OPENAI_API_KEY}
+  #   anthropic: {provider: anthropic, model: claude-sonnet-5, api_key_env: ANTHROPIC_API_KEY}
+  #   manual: `mvg story prompt` prints the prompt; paste it in any chat and save the reply as story.json
+  story: {provider: gemini, model: gemini-3.5-flash, location: global}
+  image: {model: gemini-3-pro-image, location: global}          # cast stills and keyframes (Nano Banana Pro)
+  video: {provider: veo, model: veo-3.1-generate-001, location: us-central1, resolution: 1080p, generate_audio: false}
+  # video: {provider: omni, model: gemini-omni-1.1-flash-preview, location: global, resolution: 1080p}
+  tts: {model: gemini-3.1-flash-tts-preview, location: global}
+  music: {model: lyria-3-pro-preview, location: global}
+
+output:
+  gcs_uri: null           # optional gs://bucket/prefix for Veo output (needs storage.objects.create)
+
+limits:
+  parallel: 3             # concurrent image or video requests
