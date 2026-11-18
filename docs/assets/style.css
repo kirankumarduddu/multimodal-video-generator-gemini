@@ -337,8 +337,14 @@ details.faq[open] summary { border-bottom: 1px solid var(--line); margin-bottom:
 .monogram.small { width: 72px; height: 72px; font-size: 1.5rem; box-shadow: none; color: var(--hero); }
 .focus { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 1rem 0 0; }
 .focus li { margin: 0; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .28); color: #e6ecf5; font-size: .9rem; }
-.principles { list-style: none; padding: 0; margin: 0; }
-.principles li { margin: 0 0 14px; padding-left: 18px; border-left: 3px solid var(--accent); }
+.focus.roles { margin: .2rem 0 1rem; }
+.focus.roles li { border-color: rgba(242, 179, 61, .55); color: #ffe3a6; font-weight: 600; }
+.prose > p { max-width: 820px; font-size: 1.05rem; }
+.about-tags { margin-top: 1.4rem; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: .4rem 0 0; }
+.pills li { margin: 0; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: .9rem; font-weight: 600; }
+.motto { background: var(--hero); color: #fff; padding: 44px 0; text-align: center; }
+.motto p { margin: 0; font-size: clamp(1.3rem, 2.6vw, 1.9rem); font-weight: 700; letter-spacing: .01em; color: var(--gate); }
 .author { display: flex; align-items: center; gap: 20px; }
 .author p { margin: 0; }
 .author .role { color: var(--muted); }

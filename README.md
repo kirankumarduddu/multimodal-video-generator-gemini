@@ -126,7 +126,8 @@ identical.
 
 ## Author
 
-Kiran Kumar Duddu, AI Innovator: AI agents for healthcare and the agent harnesses that make them safe to run.
+Kiran Kumar Duddu: AI Architect, Agentic AI Innovator, Healthcare Technology Leader and Open-Source Builder.
+Build openly. Engineer responsibly. Make AI useful.
 [About](https://kirankumarduddu.github.io/multimodal-video-generator-gemini/about.html) ·
 [GitHub](https://github.com/kirankumarduddu)
 
