@@ -124,6 +124,12 @@ python -m pytest -q        # offline: no API calls; the pipeline test renders ca
 The story schema and prompt live in `mvgen/` and are copied to `docs/assets/` for the guide; a test keeps them
 identical.
 
+## Author
+
+Kiran Kumar Duddu, AI Innovator: AI agents for healthcare and the agent harnesses that make them safe to run.
+[About](https://kirankumarduddu.github.io/multimodal-video-generator-gemini/about.html) ·
+[GitHub](https://github.com/kirankumarduddu)
+
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE). Not an official Google product. Gemini, Veo, Lyria and Google Cloud are
